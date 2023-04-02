@@ -284,7 +284,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	        
 	        // TungPG Mod - Send order information to Tool
 	        $shop_domain = $_SERVER['HTTP_HOST'];
-	        $send_order_to_tool_url = $this->multi_awx_payment_server_domain . "/index.php?r=multi-awx-embed-payment/create-new-order";
+	        $send_order_to_tool_url = $this->multi_awx_payment_server_domain . "/index.php?r=multi-airwallex-embed-payment/create-new-order";
 	        
 	        if(!(strpos($send_order_to_tool_url, "http") === 0)){
 	            $send_order_to_tool_url = "https://" . $send_order_to_tool_url;
@@ -489,7 +489,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    $buyer_ip = $this->getIPAddress();
 	    
 	    // Get active awx account
-	    $get_available_awx_account_url = "https://" . $this->multi_awx_payment_server_domain . "/index.php?r=multi-awx-embed-payment/get-available-awx-account";
+	    $get_available_awx_account_url = "https://" . $this->multi_awx_payment_server_domain . "/index.php?r=multi-airwallex-embed-payment/get-available-airwallex-account";
 
 		// Get the Airwallex Shop Domain and Airwallex Account id
 		$options = array(
@@ -530,7 +530,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		
     		if ($this->testmode_enabled == 'yes') {
     		    /* translators: %s: Link to Airwallex sandbox testing guide page */
-    		    echo "<div>" . sprintf(__('TEST MODE ENABLED. In test mode, you can use the card number 4242424242424242 with any CVC and a valid expiration date or check the <a href="%s" target="_blank">Testing Airwallex documentation</a> for more card numbers.', 'woocommerce-gateway-awx'), 'https://awx.com/docs/testing') . "</div>";
+    		    echo "<div>" . sprintf(__('TEST MODE ENABLED. In test mode, you can use the card number 4035 5010 0000 0008	 with any CVC and a valid expiration date or check the <a href="%s" target="_blank">Testing Airwallex documentation</a> for more card numbers.', 'woocommerce-gateway-awx'), 'https://www.airwallex.com/docs/online-payments__test-card-numbers') . "</div>";
     		}
     		
     	    ?>

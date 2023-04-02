@@ -2,7 +2,7 @@
 /* @wordpress-plugin
  * Plugin Name:       Infipay WooCommerce Multi Airwallex Payment Gateway
  * Description:       The plugin allows the use of multiple Airwallex accounts in the same shop. These plugins are required to use: WP Session Manager.
- * Version:           1.0.4
+ * Version:           1.0.0
  * WC requires at least: 5.0
  * WC tested up to: 5.9.3
  * Author:            TungPG
