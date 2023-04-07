@@ -63,7 +63,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 				),
 
 			    'card_fields_in_a_row' => array(
-			        'title' 		=> __( 'Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
+			        'title' 		=> __( 'Card fields in a row Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
 			        'type' 			=> 'checkbox',
 			        'label' 		=> __( 'Card fields in a row', 'infipay-woocommerce-multi-awx-payment-gateway' ),
 			        'default' 		=> 'no'
