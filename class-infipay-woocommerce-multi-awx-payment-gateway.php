@@ -26,6 +26,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->enabled = $this->get_option('enabled');
+		$this->card_fields_in_a_row= $this->get_option('card_fields_in_a_row');
 		$this->testmode_enabled = $this->get_option('testmode_enabled');
 		$this->multi_awx_payment_server_domain = $this->get_option('multi_awx_payment_server_domain');
 		$this->title = $this->get_option('title');
@@ -60,6 +61,13 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 					'label' 		=> __( 'Enable Infipay Multi Airwallex Payment', 'infipay-woocommerce-multi-awx-payment-gateway' ),
 					'default' 		=> 'no'
 				),
+
+			    'card_fields_in_a_row' => array(
+			        'title' 		=> __( 'Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
+			        'type' 			=> 'checkbox',
+			        'label' 		=> __( 'Card fields in a row', 'infipay-woocommerce-multi-awx-payment-gateway' ),
+			        'default' 		=> 'no'
+			    ),			    
 			    
 			    'testmode_enabled' => array(
 			        'title' 		=> __( 'Test Mode Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
@@ -533,9 +541,14 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		    echo "<div>" . sprintf(__('TEST MODE ENABLED. In test mode, you can use the card number 4035 5010 0000 0008	 with any CVC and a valid expiration date or check the <a href="%s" target="_blank">Testing Airwallex documentation</a> for more card numbers.', 'woocommerce-gateway-awx'), 'https://www.airwallex.com/docs/online-payments__test-card-numbers') . "</div>";
     		}
     		
-    	    ?>
+    		$card_form_type = 'infipay-awx-get-payment-form-split-card';
+    		
+    		if($this->card_fields_in_a_row == 'yes'){
+    		    $card_form_type = 'infipay-awx-get-payment-form';
+    		}
+		    ?>
     	    <div style="margin-top:10px">
-    		<iframe id="payment-area" src="<?= "https://$payment_shop_domain/icheckout/" . '?infipay-awx-get-payment-form=1' ?>" scrolling="no" frameBorder="0" style="width: 100%; hight: 100%"></iframe>
+    		<iframe id="payment-area" src="<?= "https://$payment_shop_domain/icheckout/" . '?' . $card_form_type . '=1' ?>" scrolling="no" frameBorder="0" style="width: 100%; hight: 100%"></iframe>
     		</div>
     		<?php
 		}
