@@ -24,7 +24,6 @@ jQuery(function ($) {
             window.infipay_awx_checkout_error = false;
             e.preventDefault();
             if (validateFormCheckout()) {
-	alert($('#payment-area')[0].attr('src'));
                 $('#payment-area')[0].contentWindow.postMessage({
                     name: 'infipay-submitFormAirwallex',
                     value: {
