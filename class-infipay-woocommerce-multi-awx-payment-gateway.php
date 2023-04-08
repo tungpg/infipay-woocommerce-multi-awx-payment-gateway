@@ -62,12 +62,12 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 					'default' 		=> 'no'
 				),
 
-			    'card_fields_in_a_row' => array(
-			        'title' 		=> __( 'Card fields in a row Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
-			        'type' 			=> 'checkbox',
-			        'label' 		=> __( 'Card fields in a row', 'infipay-woocommerce-multi-awx-payment-gateway' ),
-			        'default' 		=> 'no'
-			    ),			    
+// 			    'card_fields_in_a_row' => array(
+// 			        'title' 		=> __( 'Card fields in a row Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
+// 			        'type' 			=> 'checkbox',
+// 			        'label' 		=> __( 'Card fields in a row', 'infipay-woocommerce-multi-awx-payment-gateway' ),
+// 			        'default' 		=> 'no'
+// 			    ),			    
 			    
 			    'testmode_enabled' => array(
 			        'title' 		=> __( 'Test Mode Enable/Disable', 'infipay-woocommerce-multi-awx-payment-gateway' ),
@@ -544,6 +544,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		$card_form_type = 'infipay-awx-get-payment-form-split-card';
     		$card_form_height = '400px';
     		
+    		$this->card_fields_in_a_row = 'no'; // TODO
     		if($this->card_fields_in_a_row == 'yes'){
     		    $card_form_type = 'infipay-awx-get-payment-form';
     		    $card_form_height = '200px';
