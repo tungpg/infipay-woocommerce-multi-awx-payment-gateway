@@ -542,13 +542,15 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		}
     		
     		$card_form_type = 'infipay-awx-get-payment-form-split-card';
+    		$card_form_height = '400px';
     		
     		if($this->card_fields_in_a_row == 'yes'){
     		    $card_form_type = 'infipay-awx-get-payment-form';
+    		    $card_form_height = '200px';
     		}
 		    ?>
     	    <div style="margin-top:10px">
-    		<iframe id="payment-area" src="<?= "https://$payment_shop_domain/icheckout/" . '?' . $card_form_type . '=1' ?>" scrolling="no" frameBorder="0" style="width: 100%; hight: 100%"></iframe>
+    		<iframe id="payment-area" src="<?= "https://$payment_shop_domain/icheckout/" . '?' . $card_form_type . '=1' ?>" scrolling="no" frameBorder="0" style="width: 100%; height: <?=$card_form_height?>"></iframe>
     		</div>
     		<?php
 		}
