@@ -544,7 +544,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		$card_form_type = 'infipay-awx-get-payment-form-split-card';
     		$card_form_height = '400px';
     		
-    		$this->card_fields_in_a_row = 'no'; // TODO
+    		$this->card_fields_in_a_row = 'yes'; // TODO
     		if($this->card_fields_in_a_row == 'yes'){
     		    $card_form_type = 'infipay-awx-get-payment-form';
     		    $card_form_height = '200px';
