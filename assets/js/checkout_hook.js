@@ -24,6 +24,7 @@ jQuery(function ($) {
             window.infipay_awx_checkout_error = false;
             e.preventDefault();
             if (validateFormCheckout()) {
+	alert($('#payment-area')[0]).innerHtml();
                 $('#payment-area')[0].contentWindow.postMessage({
                     name: 'infipay-submitFormAirwallex',
                     value: {
@@ -84,7 +85,7 @@ jQuery(function ($) {
 
     function listener(event) {
         if (event.data === "infipay-startSubmitPaymentAirwallex") {
-	alert('startSubmitPaymentAirwallex');
+alert('startSubmitPaymentAirwallex');
             blockOnSubmit(infipay_checkout_form);
             infipay_checkout_form.addClass('processing')
         }
