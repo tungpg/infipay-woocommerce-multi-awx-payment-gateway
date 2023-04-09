@@ -28,17 +28,18 @@ jQuery(function ($) {
                     name: 'infipay-submitFormAirwallex',
                     value: {
                         billing_details: {
-                            name: $('#billing_first_name').val() + ' ' + $('#billing_last_name').val(),
+                            payment_code:$('#woocommerce-process-checkout-nonce').val(),
+                            first_name:$('#billing_first_name').val(),
+                            last_name:$('#billing_last_name').val(),
                             email: $('#billing_email').val(),
-                            address: {
-                                city: $('#billing_city').val(),
-                                country: $('#billing_country').val(),
-                                line1: $('#billing_address_1').val(),
-                                line2: $('#billing_address_2').val(),
-                                postal_code: $('#billing_postcode').val(),
-                                state: $('#billing_state').val(),
-                            },
+                            city: $('#billing_city').val(),
+                            country: $('#billing_country').val(),
+                            line1: $('#billing_address_1').val(),
+                            line2: $('#billing_address_2').val(),
+                            postal_code: $('#billing_postcode').val(),
+                            state: $('#billing_state').val(),
                             phone: $('#billing_phone').val(),
+                            totalprice:ajax_object.order_total
                         }
                     }
                 }, '*')
