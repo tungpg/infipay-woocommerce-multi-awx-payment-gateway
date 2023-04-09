@@ -483,6 +483,11 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    
 	    wp_register_script('infipay_awx_js', plugins_url('assets/js/checkout_hook.js', __FILE__), array('jquery'), OPT_INFIPAY_STRIPE_VERSION . time(), true);
 	    wp_enqueue_script('infipay_awx_js');
+	    
+	    wp_localize_script('infipay_awx_js', 'ajax_object', [
+	        'cs_add_order_note_nonce' => wp_create_nonce('cs_add_order_note'),
+	        'order_total' => $this->get_order_total()
+	    ]);
 	}
 	
 	public function payment_fields(){
