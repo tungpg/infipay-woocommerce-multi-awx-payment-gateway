@@ -84,16 +84,16 @@ jQuery(function ($) {
     }
 
     function listener(event) {
+        if (event.data === 'infipay-loadedPaymentFormAirwallex') {
+            window.loadedPaymentFormAirwallex = true;
+            $('.woocommerce-checkout-payment').unblock();
+        }
         if (event.data === "infipay-startSubmitPaymentAirwallex") {
             blockOnSubmit(infipay_checkout_form);
             infipay_checkout_form.addClass('processing')
         }
         if (event.data === "infipay-endSubmitPaymentAirwallex") {
             infipay_checkout_form.removeClass('processing').unblock();
-        }
-        if (event.data === 'infipay-loadedPaymentFormAirwallex') {
-            window.loadedPaymentFormAirwallex = true;
-            $('.woocommerce-checkout-payment').unblock();
         }
         if (event.data === 'infipay-paymentFormCompletedAirwallex') {
             window.paymentFormCompletedAirwallex = true;
