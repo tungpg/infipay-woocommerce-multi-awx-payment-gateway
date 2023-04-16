@@ -114,6 +114,7 @@ jQuery(function ($) {
         }
         if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
 			alert(JSON.stringify(event.data.value));
+			alert(event.data.value.paymentIntent);
 	/*
             var paymentMethodId = event.data.value;
             if (infipay_checkout_form.find('[name="infipay-awx-payment-method-id"]')) {
