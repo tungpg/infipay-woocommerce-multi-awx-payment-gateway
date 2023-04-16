@@ -113,20 +113,20 @@ jQuery(function ($) {
 			}
         }
         if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
-			alert(JSON.stringify(event.data.value));
-			alert(event.data.value.paymentIntent);
-	/*
-            var paymentMethodId = event.data.value;
-            if (infipay_checkout_form.find('[name="infipay-awx-payment-method-id"]')) {
-                infipay_checkout_form.find('[name="infipay-awx-payment-method-id"]').remove();
+	alert(JSON.stringify(data));
+            var paymentIntentId = event.data.value.paymentIntentId;
+            
+            if (infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
+                infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]').remove();
             }
-            infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-method-id" value="' + paymentMethodId + '"/>');
+            
+            infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-intent-id" value="' + paymentIntentId + '"/>');
             infipay_checkout_form.removeClass('processing').unblock();
-            $('form.checkout').submit();
+            infipay_checkout_form.submit();
+            
             if (validateFormCheckout()) {
                 loadPaymentProcess();
             }
-            */
         }
         /*if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
             var paymentIntentId = event.data.value;

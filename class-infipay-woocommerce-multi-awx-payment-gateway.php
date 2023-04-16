@@ -238,7 +238,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	        ],
 	        'body' => json_encode([
 	            //'payment_intent' => $order->get_transaction_id(),
-	            'payment_method_id' => $_POST['infipay-awx-payment-method-id'],
+	            'payment_intent_id' => $_POST['infipay-awx-payment-intent-id'],
 	            'order_id' => $order->get_id(),
 	            'order_invoice' => $order->get_order_number(),
 	            'order_items' => $items,
