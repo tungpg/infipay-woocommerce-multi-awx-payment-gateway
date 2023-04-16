@@ -112,8 +112,8 @@ jQuery(function ($) {
 	            checkout_error('We cannot process your payment right now, please try another payment method.[3]');
 			}
         }
-        if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
-	alert(JSON.stringify(event.data));
+        if ((typeof event.data === 'object') && event.data.name === 'infipay-successSubmitPaymentAirwallex') {
+			alert(JSON.stringify(event.data));
             var paymentIntentId = event.data.value.paymentIntentId;
             
             if (infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {

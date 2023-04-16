@@ -231,39 +231,39 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 // 	            "total" => $amount
 // 	        ];
 // 	    }
-	    $response = wp_remote_post("https://" . $activatedProxy->payment_shop_domain . '/icheckout/?infipay-awx-make-payment=1', [
-	        'timeout' => 5 * 60,
-	        'headers' => [
-	            'Content-Type' => 'application/json',
-	        ],
-	        'body' => json_encode([
-	            //'payment_intent' => $order->get_transaction_id(),
-	            'payment_intent_id' => $_POST['infipay-awx-payment-intent-id'],
-	            'order_id' => $order->get_id(),
-	            'order_invoice' => $order->get_order_number(),
-	            'order_items' => $items,
-	            'statement_descriptor' => $order->get_order_number(),
-	            'merchant_site' => get_home_url(),
-	            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-	            'amount' => $order->get_total(),
-	            'customer_zipcode' => $billingPostCode,
-	            'billing_email' => $order->get_billing_email(),
-	            'currency' => $order->get_currency(),
-	            'name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-	            'shipping' => [
-	                'name' => $shippingName,
-	                'phone' => method_exists($order, 'get_shipping_phone') && $order->get_shipping_phone() ? $order->get_shipping_phone() : $order->get_billing_phone(),
-	                'address' => [
-	                    'city' => $shippingCity,
-	                    'country' => $shippingCountry,
-	                    'line1' => $shippingAddress1,
-	                    'line2' => $shippingAddress2,
-	                    'postal_code' => $shippingPostCode,
-	                    'state' => $shippingState,
-	                ],
-	            ]
-	        ])
-	    ]);
+// 	    $response = wp_remote_post("https://" . $activatedProxy->payment_shop_domain . '/icheckout/?infipay-awx-make-payment=1', [
+// 	        'timeout' => 5 * 60,
+// 	        'headers' => [
+// 	            'Content-Type' => 'application/json',
+// 	        ],
+// 	        'body' => json_encode([
+// 	            //'payment_intent' => $order->get_transaction_id(),
+// 	            'payment_intent_id' => $_POST['infipay-awx-payment-intent-id'],
+// 	            'order_id' => $order->get_id(),
+// 	            'order_invoice' => $order->get_order_number(),
+// 	            'order_items' => $items,
+// 	            'statement_descriptor' => $order->get_order_number(),
+// 	            'merchant_site' => get_home_url(),
+// 	            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+// 	            'amount' => $order->get_total(),
+// 	            'customer_zipcode' => $billingPostCode,
+// 	            'billing_email' => $order->get_billing_email(),
+// 	            'currency' => $order->get_currency(),
+// 	            'name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+// 	            'shipping' => [
+// 	                'name' => $shippingName,
+// 	                'phone' => method_exists($order, 'get_shipping_phone') && $order->get_shipping_phone() ? $order->get_shipping_phone() : $order->get_billing_phone(),
+// 	                'address' => [
+// 	                    'city' => $shippingCity,
+// 	                    'country' => $shippingCountry,
+// 	                    'line1' => $shippingAddress1,
+// 	                    'line2' => $shippingAddress2,
+// 	                    'postal_code' => $shippingPostCode,
+// 	                    'state' => $shippingState,
+// 	                ],
+// 	            ]
+// 	        ])
+// 	    ]);
 	    
 	    if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
 	        error_log(print_r($response, true));
