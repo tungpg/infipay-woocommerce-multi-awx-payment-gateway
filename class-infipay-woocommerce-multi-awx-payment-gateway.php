@@ -1,14 +1,14 @@
 <?php 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-const INFIPAY_STRIPE_FEE_DISPLAY_ORDER_CURRENCY = true;
+const INFIPAY_AIRWALLEX_FEE_DISPLAY_ORDER_CURRENCY = true;
 
-const METAKEY_INFIPAY_STRIPE_PROXY_URL = '_infipay_awx_proxy_url';
+const METAKEY_INFIPAY_AIRWALLEX_PROXY_URL = '_infipay_awx_proxy_url';
 
-const OPT_INFIPAY_STRIPE_VERSION = '1.0.0';
-const METAKEY_INFIPAY_STRIPE_FEE      = '_infipay_awx_fee';
-const METAKEY_INFIPAY_STRIPE_PAYOUT   = '_infipay_awx_payout';
-const METAKEY_INFIPAY_STRIPE_CURRENCY = '_infipay_awx_currency';
+const OPT_INFIPAY_AIRWALLEX_VERSION = '1.0.0';
+const METAKEY_INFIPAY_AIRWALLEX_FEE      = '_infipay_awx_fee';
+const METAKEY_INFIPAY_AIRWALLEX_PAYOUT   = '_infipay_awx_payout';
+const METAKEY_INFIPAY_AIRWALLEX_CURRENCY = '_infipay_awx_currency';
 
 class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gateway{
     
@@ -265,28 +265,28 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 // 	        ])
 // 	    ]);
 	    
-	    if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
-	        error_log(print_r($response, true));
-	        wc_add_notice(json_encode($response), 'error');
-	        // wc_add_notice('We cannot process your payment right now, please try another payment method.', 'error');
-	        return false;
-	    }
-	    $body = wp_remote_retrieve_body($response);
-	    $body = json_decode($body);
+// 	    if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
+// 	        error_log(print_r($response, true));
+// 	        wc_add_notice(json_encode($response), 'error');
+// 	        // wc_add_notice('We cannot process your payment right now, please try another payment method.', 'error');
+// 	        return false;
+// 	    }
+// 	    $body = wp_remote_retrieve_body($response);
+// 	    $body = json_decode($body);
 	    
-	    if ($body->status === 'succeeded') {
-	        $paymentIntent = $body->payment_intent;
+// 	    if ($body->status === 'succeeded') {
+	        $paymentIntentId = $_POST['infipay-awx-payment-intent-id'];
 	        $order->payment_complete();
 	        $order->reduce_order_stock();
 	        
 	        //Save the processed proxy for this order (using for refund later)
 	        $order->add_order_note(sprintf(__('Airwallex charged by proxy %s', 'infipay'), $activatedProxy->payment_shop_domain), 0, false);
 	        // some notes to customer (replace true with false to make it private)
-	        $order->add_order_note(sprintf(__('Airwallex Checkout charge complete (Payment Intent ID: %s)', 'infipay'), $paymentIntent->id));
+	        $order->add_order_note(sprintf(__('Airwallex Checkout charge complete (Payment Intent ID: %s)', 'infipay'), $paymentIntentId));
 	        
-	        update_post_meta($order->get_id(), '_transaction_id', $paymentIntent->id);
-	        update_post_meta($order->get_id(), METAKEY_INFIPAY_STRIPE_PROXY_URL, $activatedProxy->payment_shop_domain);
-	        $this->updateFeeNetOrderAirwallex($body->charge, $order);
+	        update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
+	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, $activatedProxy->payment_shop_domain);
+	        //$this->updateFeeNetOrderAirwallex($body->charge, $order);
 	        // Empty cart
 	        $woocommerce->cart->empty_cart();
 	        
@@ -316,7 +316,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
             	        'shop_domain' => $shop_domain,
             	        'shop_order_id' => $order_id,
             	        'buyer_ip' => $buyer_ip,
-            	        'awx_payment_id' => $paymentIntent->id,
+            	        'awx_payment_id' => $paymentIntentId,
 	               ])
 	           )
 	        );
@@ -329,43 +329,43 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	            'result' => 'success',
 	            'redirect' => $order->get_checkout_order_received_url()
 	        ];
-	    } elseif($body->status === 'requires_action'){
-	        $order->update_status('failed');	        
-	        $order->add_order_note('3D Secure Required');
+// 	    } elseif($body->status === 'requires_action'){
+// 	        $order->update_status('failed');	        
+// 	        $order->add_order_note('3D Secure Required');
 	        
-	        wc_add_notice('Your card requires 3DS authentication. Please use another payment method.', 'error');
-	        return false;
-	    }else {
-	        error_log(print_r($response, true));
-	        update_post_meta($order->get_id(), METAKEY_INFIPAY_STRIPE_PROXY_URL, $activatedProxy->payment_shop_domain);
-	        // Empty cart
-	        $order->update_status('failed');
-	        if($body->code === 'domain_whitelist_not_allow') {
-	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s', 'infipay'),
-	                $activatedProxy->payment_shop_domain,
-	                'Domain whitelist is required'
-	                ));
-	        } else if($body->code === 'customer_zipcode_not_allow') {
-	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s', 'infipay'),
-	                $activatedProxy->payment_shop_domain,
-	                "Customer's zipcode is blacklisted"
-	                ));
-	            wc_add_notice('The selected payment method is suspended, Please contact merchant for more information.', 'error');
-	            return false;
-	        } else {
-	            if (isset($body->payment_intent->id)) {
-	                $paymentIntentId = $body->payment_intent->id;
-	                update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
-	            }
-	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s, Payment Intent ID: %s', 'infipay'),
-	                $activatedProxy->payment_shop_domain,
-	                is_string($err) ?: $body->error_message,
-	                $paymentIntentId
-	                ));
-	        }
-	        wc_add_notice('We cannot process your payment right now, please try another payment method.[2]', 'error');
-	        return false;
-	    }
+// 	        wc_add_notice('Your card requires 3DS authentication. Please use another payment method.', 'error');
+// 	        return false;
+// 	    }else {
+// 	        error_log(print_r($response, true));
+// 	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, $activatedProxy->payment_shop_domain);
+// 	        // Empty cart
+// 	        $order->update_status('failed');
+// 	        if($body->code === 'domain_whitelist_not_allow') {
+// 	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s', 'infipay'),
+// 	                $activatedProxy->payment_shop_domain,
+// 	                'Domain whitelist is required'
+// 	                ));
+// 	        } else if($body->code === 'customer_zipcode_not_allow') {
+// 	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s', 'infipay'),
+// 	                $activatedProxy->payment_shop_domain,
+// 	                "Customer's zipcode is blacklisted"
+// 	                ));
+// 	            wc_add_notice('The selected payment method is suspended, Please contact merchant for more information.', 'error');
+// 	            return false;
+// 	        } else {
+// 	            if (isset($body->payment_intent->id)) {
+// 	                $paymentIntentId = $body->payment_intent->id;
+// 	                update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
+// 	            }
+// 	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s, Payment Intent ID: %s', 'infipay'),
+// 	                $activatedProxy->payment_shop_domain,
+// 	                is_string($err) ?: $body->error_message,
+// 	                $paymentIntentId
+// 	                ));
+// 	        }
+// 	        wc_add_notice('We cannot process your payment right now, please try another payment method.[2]', 'error');
+// 	        return false;
+// 	    }
 	}
 	
 	function process_refund( $order_id, $amount = NULL, $reason = '' ) {
@@ -396,7 +396,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    
 	    //Get the proxy url when this order was made
 	    
-	    $proxyUrl = get_post_meta($order_id, METAKEY_INFIPAY_STRIPE_PROXY_URL, true);
+	    $proxyUrl = get_post_meta($order_id, METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, true);
 	    
 	    // do API call
 	    $url = "https://" . $proxyUrl . "/icheckout/?infipay-awx-refund=1";
@@ -430,39 +430,39 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    }
 	}
 	
-	function updateFeeNetOrderAirwallex($charge, $order)
-	{
-	    if (isset($charge->balance_transaction) && is_object($charge->balance_transaction)) {
-	        $display_order_currency = INFIPAY_STRIPE_FEE_DISPLAY_ORDER_CURRENCY;
-	        $balance_transaction = $charge->balance_transaction;
-	        $exchange_rate = $balance_transaction->exchange_rate === null ? 1 : $balance_transaction->exchange_rate;
-	        $amount_refunded = $display_order_currency ? $charge->amount_refunded : $charge->amount_refunded * $exchange_rate;
-	        $net = $display_order_currency ? $balance_transaction->net / $exchange_rate : $balance_transaction->net;
-	        $net = $net - $amount_refunded;
-	        $fee = $display_order_currency ? $balance_transaction->fee / $exchange_rate : $balance_transaction->fee;
-	        $currency = $display_order_currency ? $order->get_currency() : strtoupper($balance_transaction->currency);
-	        $payment_balance = [];
-	        $payment_balance['currency'] = $currency;
-	        $payment_balance['fee'] = $fee;
-	        $payment_balance['net'] = $net;
-	        if (count($charge->refunds->data) > 0) {
-	            foreach ($charge->refunds->data as $refund) {
-	                if (is_object($refund->balance_transaction)) {
-	                    $balance_transaction = $refund->balance_transaction;
-	                    $exchange_rate = $balance_transaction->exchange_rate === null ? 1 : $balance_transaction->exchange_rate;
-	                    $fee = $display_order_currency ? $balance_transaction->fee / $exchange_rate : $balance_transaction->fee;
-	                    $payment_balance['net'] = $payment_balance['net'] - $fee;
-	                    $payment_balance['fee'] = $payment_balance['fee'] + $fee;
-	                }
-	            }
-	        }
-	        $payment_balance['fee'] = wc_format_decimal($payment_balance['fee'] / 100, 4);
-	        $payment_balance['net'] = wc_format_decimal($payment_balance['net'] / 100, 4);
-	        update_post_meta($order->get_id(), METAKEY_INFIPAY_STRIPE_FEE, $payment_balance['fee']);
-	        update_post_meta($order->get_id(), METAKEY_INFIPAY_STRIPE_PAYOUT, $payment_balance['net']);
-	        update_post_meta($order->get_id(), METAKEY_INFIPAY_STRIPE_CURRENCY, $payment_balance['currency']);
-	    }
-	}
+// 	function updateFeeNetOrderAirwallex($charge, $order)
+// 	{
+// 	    if (isset($charge->balance_transaction) && is_object($charge->balance_transaction)) {
+// 	        $display_order_currency = INFIPAY_AIRWALLEX_FEE_DISPLAY_ORDER_CURRENCY;
+// 	        $balance_transaction = $charge->balance_transaction;
+// 	        $exchange_rate = $balance_transaction->exchange_rate === null ? 1 : $balance_transaction->exchange_rate;
+// 	        $amount_refunded = $display_order_currency ? $charge->amount_refunded : $charge->amount_refunded * $exchange_rate;
+// 	        $net = $display_order_currency ? $balance_transaction->net / $exchange_rate : $balance_transaction->net;
+// 	        $net = $net - $amount_refunded;
+// 	        $fee = $display_order_currency ? $balance_transaction->fee / $exchange_rate : $balance_transaction->fee;
+// 	        $currency = $display_order_currency ? $order->get_currency() : strtoupper($balance_transaction->currency);
+// 	        $payment_balance = [];
+// 	        $payment_balance['currency'] = $currency;
+// 	        $payment_balance['fee'] = $fee;
+// 	        $payment_balance['net'] = $net;
+// 	        if (count($charge->refunds->data) > 0) {
+// 	            foreach ($charge->refunds->data as $refund) {
+// 	                if (is_object($refund->balance_transaction)) {
+// 	                    $balance_transaction = $refund->balance_transaction;
+// 	                    $exchange_rate = $balance_transaction->exchange_rate === null ? 1 : $balance_transaction->exchange_rate;
+// 	                    $fee = $display_order_currency ? $balance_transaction->fee / $exchange_rate : $balance_transaction->fee;
+// 	                    $payment_balance['net'] = $payment_balance['net'] - $fee;
+// 	                    $payment_balance['fee'] = $payment_balance['fee'] + $fee;
+// 	                }
+// 	            }
+// 	        }
+// 	        $payment_balance['fee'] = wc_format_decimal($payment_balance['fee'] / 100, 4);
+// 	        $payment_balance['net'] = wc_format_decimal($payment_balance['net'] / 100, 4);
+// 	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_FEE, $payment_balance['fee']);
+// 	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PAYOUT, $payment_balance['net']);
+// 	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_CURRENCY, $payment_balance['currency']);
+// 	    }
+// 	}
 	
 	/*
 	 * Custom CSS and JS, in most cases required only when you decided to go with a custom credit card form
@@ -478,10 +478,10 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    if ('no' === $this->enabled) {
 	        return;
 	    }
-	    wp_register_style('infipay_awx_styles', plugins_url('assets/css/styles.css', __FILE__), [], OPT_INFIPAY_STRIPE_VERSION);
+	    wp_register_style('infipay_awx_styles', plugins_url('assets/css/styles.css', __FILE__), [], OPT_INFIPAY_AIRWALLEX_VERSION);
 	    wp_enqueue_style('infipay_awx_styles');
 	    
-	    wp_register_script('infipay_awx_js', plugins_url('assets/js/checkout_hook.js', __FILE__), array('jquery'), OPT_INFIPAY_STRIPE_VERSION . time(), true);
+	    wp_register_script('infipay_awx_js', plugins_url('assets/js/checkout_hook.js', __FILE__), array('jquery'), OPT_INFIPAY_AIRWALLEX_VERSION . time(), true);
 	    wp_enqueue_script('infipay_awx_js');
 	    
 	    wp_localize_script('infipay_awx_js', 'ajax_object', [
