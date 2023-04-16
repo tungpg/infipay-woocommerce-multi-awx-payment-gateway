@@ -112,7 +112,9 @@ jQuery(function ($) {
 	            checkout_error('We cannot process your payment right now, please try another payment method.[3]');
 			}
         }
-        if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentMethodIdAirwallex') {
+        if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
+			alert(JSON.stringify(event.data.value));
+	/*
             var paymentMethodId = event.data.value;
             if (infipay_checkout_form.find('[name="infipay-awx-payment-method-id"]')) {
                 infipay_checkout_form.find('[name="infipay-awx-payment-method-id"]').remove();
@@ -123,6 +125,7 @@ jQuery(function ($) {
             if (validateFormCheckout()) {
                 loadPaymentProcess();
             }
+            */
         }
         /*if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
             var paymentIntentId = event.data.value;
