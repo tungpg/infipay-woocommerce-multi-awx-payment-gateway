@@ -113,7 +113,7 @@ jQuery(function ($) {
 			}
         }
         if ((typeof event.data === 'object') && event.data.name === 'infipay-successSubmitPaymentAirwallex') {
-			alert(JSON.stringify(event.data));
+			//alert(JSON.stringify(event.data));
             var paymentIntentId = event.data.value.paymentIntentId;
             
             if (infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
