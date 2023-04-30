@@ -114,14 +114,20 @@ jQuery(function ($) {
         }
         if ((typeof event.data === 'object') && event.data.name === 'infipay-successSubmitPaymentAirwallex') {
 			//alert(JSON.stringify(event.data));
-            var paymentIntentId = event.data.value.paymentIntentId;
+            var paymentIntentId = event.data.value.id;
 			alert('paymentIntentId=' + paymentIntentId);
+            var merchantOrderId = event.data.value.merchant_order_id;
             
             if (infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
                 infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]').remove();
             }
             
+            if (infipay_checkout_form.find('[name="infipay-awx-payment-merchant-order-id"]')) {
+                infipay_checkout_form.find('[name="infipay-awx-payment-merchant-order-id"]').remove();
+            }
+            
             infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-intent-id" value="' + paymentIntentId + '"/>');
+            infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-merchant-order-id" value="' + merchantOrderId + '"/>');
             infipay_checkout_form.removeClass('processing').unblock();
             infipay_checkout_form.submit();
             

@@ -276,13 +276,14 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    
 // 	    if ($body->status === 'succeeded') {
 	        $paymentIntentId = $_POST['infipay-awx-payment-intent-id'];
+	        $merchantOrderId = $_POST['infipay-awx-payment-merchant-order-id'];
 	        $order->payment_complete();
 	        $order->reduce_order_stock();
 	        
 	        //Save the processed proxy for this order (using for refund later)
 	        $order->add_order_note(sprintf(__('Airwallex charged by proxy %s', 'infipay'), $activatedProxy->payment_shop_domain), 0, false);
 	        // some notes to customer (replace true with false to make it private)
-	        $order->add_order_note(sprintf(__('Airwallex Checkout charge complete (Payment Intent ID: %s)', 'infipay'), $paymentIntentId));
+	        $order->add_order_note(sprintf(__('Airwallex Checkout charge complete (Payment Intent ID: %s, Merchant Order Id: %s)', 'infipay'), $paymentIntentId, $merchantOrderId));
 	        
 	        update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
 	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, $activatedProxy->payment_shop_domain);
