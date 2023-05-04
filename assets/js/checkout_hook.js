@@ -28,7 +28,7 @@ jQuery(function ($) {
                     name: 'infipay-submitFormAirwallex',
                     value: {
                         billing_details: {
-                            payment_code:$('#woocommerce-process-checkout-nonce').val(),
+                            payment_descriptor:$('#payment_descriptor').val(),
                             first_name:$('#billing_first_name').val(),
                             last_name:$('#billing_last_name').val(),
                             email: $('#billing_email').val(),

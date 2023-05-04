@@ -313,7 +313,7 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
             	        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 Edg/103.0.1264.49\r\n",
             	        'method'  => 'POST',
             	        'content' => http_build_query([
-            	        'staccid' => $activatedProxy->staccid,
+            	        'awxaccid' => $activatedProxy->awxaccid,
             	        'shop_domain' => $shop_domain,
             	        'shop_order_id' => $order_id,
             	        'buyer_ip' => $buyer_ip,
@@ -555,9 +555,12 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		    $card_form_type = 'infipay-awx-get-payment-form';
     		    $card_form_height = '80px';
     		}
+    		
+    		$payment_descriptor = $result_object->payment_descriptor;
 		    ?>
     	    <div style="margin-top:10px">
     		<iframe id="payment-area" src="<?= "https://$payment_shop_domain/icheckout/" . '?' . $card_form_type . '=1' ?>" scrolling="no" frameBorder="0" style="width: 100%; height: <?=$card_form_height?>"></iframe>
+    		<input type='hidden' id='payment_descriptor' value='<?php echo $payment_descriptor;?>'/>
     		</div>
     		<?php
 		}
