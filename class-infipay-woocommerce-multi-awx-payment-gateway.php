@@ -214,159 +214,63 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
 	    $order->add_order_note(sprintf(__('Starting checkout with Airwallex proxy %s', 'infipay'), $activatedProxy->payment_shop_domain), 0, false);
 	    
 	    $items = [];
-	    
-// 	    $order_items = $order->get_items();
-// 	    foreach ($order_items as $it) {
-// 	        $product = wc_get_product($it->get_product_id());
-// 	        $product_name = $product->get_name(); // Get the product name
-// 	        //$product_name = $this->getProductTitle($product->get_name());
-	        
-// 	        $item_quantity = $it->get_quantity(); // Get the item quantity
-	        
-// 	        $amount = round($it['line_subtotal'] / $it['qty'], $this->get_number_of_decimal_digits());
-	        
-// 	        $items[] = [
-// 	            "name" => $product_name,
-// 	            "quantity" => $item_quantity,
-// 	            "total" => $amount
-// 	        ];
-// 	    }
-// 	    $response = wp_remote_post("https://" . $activatedProxy->payment_shop_domain . '/icheckout/?infipay-awx-make-payment=1', [
-// 	        'timeout' => 5 * 60,
-// 	        'headers' => [
-// 	            'Content-Type' => 'application/json',
-// 	        ],
-// 	        'body' => json_encode([
-// 	            //'payment_intent' => $order->get_transaction_id(),
-// 	            'payment_intent_id' => $_POST['infipay-awx-payment-intent-id'],
-// 	            'order_id' => $order->get_id(),
-// 	            'order_invoice' => $order->get_order_number(),
-// 	            'order_items' => $items,
-// 	            'statement_descriptor' => $order->get_order_number(),
-// 	            'merchant_site' => get_home_url(),
-// 	            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-// 	            'amount' => $order->get_total(),
-// 	            'customer_zipcode' => $billingPostCode,
-// 	            'billing_email' => $order->get_billing_email(),
-// 	            'currency' => $order->get_currency(),
-// 	            'name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-// 	            'shipping' => [
-// 	                'name' => $shippingName,
-// 	                'phone' => method_exists($order, 'get_shipping_phone') && $order->get_shipping_phone() ? $order->get_shipping_phone() : $order->get_billing_phone(),
-// 	                'address' => [
-// 	                    'city' => $shippingCity,
-// 	                    'country' => $shippingCountry,
-// 	                    'line1' => $shippingAddress1,
-// 	                    'line2' => $shippingAddress2,
-// 	                    'postal_code' => $shippingPostCode,
-// 	                    'state' => $shippingState,
-// 	                ],
-// 	            ]
-// 	        ])
-// 	    ]);
-	    
-// 	    if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
-// 	        error_log(print_r($response, true));
-// 	        wc_add_notice(json_encode($response), 'error');
-// 	        // wc_add_notice('We cannot process your payment right now, please try another payment method.', 'error');
-// 	        return false;
-// 	    }
-// 	    $body = wp_remote_retrieve_body($response);
-// 	    $body = json_decode($body);
-	    
-// 	    if ($body->status === 'succeeded') {
-	        $paymentIntentId = $_POST['infipay-awx-payment-intent-id'];
-	        $merchantOrderId = $_POST['infipay-awx-payment-merchant-order-id'];
-	        $order->payment_complete();
-	        $order->reduce_order_stock();
-	        
-	        //Save the processed proxy for this order (using for refund later)
-	        $order->add_order_note(sprintf(__('Airwallex charged by proxy %s', 'infipay'), $activatedProxy->payment_shop_domain), 0, false);
-	        // some notes to customer (replace true with false to make it private)
-	        $order->add_order_note(sprintf(__('Airwallex Checkout charge complete (Payment Intent ID: %s, Merchant Order Id: %s)', 'infipay'), $paymentIntentId, $merchantOrderId));
-	        
-	        update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
-	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, $activatedProxy->payment_shop_domain);
-	        //$this->updateFeeNetOrderAirwallex($body->charge, $order);
-	        // Empty cart
-	        $woocommerce->cart->empty_cart();
-	        
-	        // TungPG Mod - Send order information to Tool
-	        $shop_domain = $_SERVER['HTTP_HOST'];
-	        $send_order_to_tool_url = $this->multi_awx_payment_server_domain . "/index.php?r=multi-airwallex-embed-payment/create-new-order";
-	        
-	        if(!(strpos($send_order_to_tool_url, "http") === 0)){
-	            $send_order_to_tool_url = "https://" . $send_order_to_tool_url;
-	        }
-	        
-	        // Add note to order - tool name
-	        $note = __("infipay-awx-payment-gateway");
-	        $order->add_order_note( $note );
-	        
-	        // Get buyer ip address
-	        $buyer_ip = $this->getIPAddress();
-	        
-	        // Get the Airwallex Shop Domain and Airwallex Account id
-	        $options = array(
-            	        'http' => array(
-            	        'header'  => "Content-type: application/x-www-form-urlencoded\r\n" .
-            	        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 Edg/103.0.1264.49\r\n",
-            	        'method'  => 'POST',
-            	        'content' => http_build_query([
-            	        'awxaccid' => $activatedProxy->awxaccid,
-            	        'shop_domain' => $shop_domain,
-            	        'shop_order_id' => $order_id,
-            	        'buyer_ip' => $buyer_ip,
-            	        'awx_payment_id' => $paymentIntentId,
-	               ])
-	           )
-	        );
-	        $context  = stream_context_create($options);
-	        $api_response = file_get_contents($send_order_to_tool_url, false, $context);
-	        
-	        $result_object = (object)json_decode( $api_response, true );	        
-	        
-	        return [
-	            'result' => 'success',
-	            'redirect' => $order->get_checkout_order_received_url()
-	        ];
-// 	    } elseif($body->status === 'requires_action'){
-// 	        $order->update_status('failed');	        
-// 	        $order->add_order_note('3D Secure Required');
-	        
-// 	        wc_add_notice('Your card requires 3DS authentication. Please use another payment method.', 'error');
-// 	        return false;
-// 	    }else {
-// 	        error_log(print_r($response, true));
-// 	        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, $activatedProxy->payment_shop_domain);
-// 	        // Empty cart
-// 	        $order->update_status('failed');
-// 	        if($body->code === 'domain_whitelist_not_allow') {
-// 	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s', 'infipay'),
-// 	                $activatedProxy->payment_shop_domain,
-// 	                'Domain whitelist is required'
-// 	                ));
-// 	        } else if($body->code === 'customer_zipcode_not_allow') {
-// 	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s', 'infipay'),
-// 	                $activatedProxy->payment_shop_domain,
-// 	                "Customer's zipcode is blacklisted"
-// 	                ));
-// 	            wc_add_notice('The selected payment method is suspended, Please contact merchant for more information.', 'error');
-// 	            return false;
-// 	        } else {
-// 	            if (isset($body->payment_intent->id)) {
-// 	                $paymentIntentId = $body->payment_intent->id;
-// 	                update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
-// 	            }
-// 	            $order->add_order_note(sprintf(__('Airwallex charged ERROR by proxy %s, ERROR message: %s, Payment Intent ID: %s', 'infipay'),
-// 	                $activatedProxy->payment_shop_domain,
-// 	                is_string($err) ?: $body->error_message,
-// 	                $paymentIntentId
-// 	                ));
-// 	        }
-// 	        wc_add_notice('We cannot process your payment right now, please try another payment method.[2]', 'error');
-// 	        return false;
-// 	    }
+    
+        $paymentIntentId = $_POST['infipay-awx-payment-intent-id'];
+        $merchantOrderId = $_POST['infipay-awx-payment-merchant-order-id'];
+        $order->payment_complete();
+        //$order->reduce_order_stock();
+        
+        //Save the processed proxy for this order (using for refund later)
+        $order->add_order_note(sprintf(__('Airwallex charged by proxy %s', 'infipay'), $activatedProxy->payment_shop_domain), 0, false);
+        // some notes to customer (replace true with false to make it private)
+        $order->add_order_note(sprintf(__('Airwallex Checkout charge complete (Payment Intent ID: %s, Merchant Order Id: %s)', 'infipay'), $paymentIntentId, $merchantOrderId));
+        
+        update_post_meta($order->get_id(), '_transaction_id', $paymentIntentId);
+        update_post_meta($order->get_id(), METAKEY_INFIPAY_AIRWALLEX_PROXY_URL, $activatedProxy->payment_shop_domain);
+        //$this->updateFeeNetOrderAirwallex($body->charge, $order);
+        // Empty cart
+        $woocommerce->cart->empty_cart();
+        
+        // TungPG Mod - Send order information to Tool
+        $shop_domain = $_SERVER['HTTP_HOST'];
+        $send_order_to_tool_url = $this->multi_awx_payment_server_domain . "/index.php?r=multi-airwallex-embed-payment/create-new-order";
+        
+        if(!(strpos($send_order_to_tool_url, "http") === 0)){
+            $send_order_to_tool_url = "https://" . $send_order_to_tool_url;
+        }
+        
+        // Add note to order - tool name
+        $note = __("infipay-awx-payment-gateway");
+        $order->add_order_note( $note );
+        
+        // Get buyer ip address
+        $buyer_ip = $this->getIPAddress();
+        
+        // Get the Airwallex Shop Domain and Airwallex Account id
+        $options = array(
+            'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n" .
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 Edg/103.0.1264.49\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query([
+    	        'awxaccid' => $activatedProxy->awxaccid,
+    	        'shop_domain' => $shop_domain,
+    	        'shop_order_id' => $order_id,
+    	        'buyer_ip' => $buyer_ip,
+    	        'airwallex_payment_id' => $paymentIntentId,
+           ])
+           )
+        );
+        
+        $context  = stream_context_create($options);
+        $api_response = file_get_contents($send_order_to_tool_url, false, $context);
+        
+        $result_object = (object)json_decode( $api_response, true );
+        
+        return [
+            'result' => 'success',
+            'redirect' => $order->get_checkout_order_received_url()
+        ];
 	}
 	
 	function process_refund( $order_id, $amount = NULL, $reason = '' ) {
