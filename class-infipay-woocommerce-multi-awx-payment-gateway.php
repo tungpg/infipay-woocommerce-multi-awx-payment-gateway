@@ -461,10 +461,14 @@ class Infipay_WooCommerce_Multi_Airwallex_Payment_Gateway extends WC_Payment_Gat
     		}
     		
     		$payment_descriptor = $result_object->payment_descriptor;
+    		
+    		$awxpaymentid = $result_object->awxpaymentid;
+    		$payment_id = (string)$awxpaymentid . time();
 		    ?>
     	    <div style="margin-top:10px">
     		<iframe id="payment-area" src="<?= "https://$payment_shop_domain/icheckout/" . '?' . $card_form_type . '=1' ?>" scrolling="no" frameBorder="0" style="width: 100%; height: <?=$card_form_height?>"></iframe>
     		<input type='hidden' id='payment_descriptor' value='<?= $payment_descriptor?>'/>
+    		<input type='hidden' id='payment_id' value='<?= $payment_id?>'/>
     		</div>
     		<?php
 		}

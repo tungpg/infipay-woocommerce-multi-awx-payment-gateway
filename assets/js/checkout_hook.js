@@ -28,6 +28,7 @@ jQuery(function ($) {
                     name: 'infipay-submitFormAirwallex',
                     value: {
                         billing_details: {
+							payment_id:$('#payment_id').val(),
                             payment_descriptor:$('#payment_descriptor').val(),
                             first_name:$('#billing_first_name').val(),
                             last_name:$('#billing_last_name').val(),
