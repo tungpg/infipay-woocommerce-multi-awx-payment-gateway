@@ -154,7 +154,7 @@ jQuery(function ($) {
         $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
         infipay_checkout_form.prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
             '<ul class="woocommerce-error">' +
-            '<li data-id="billing_last_name">' + error_message + '' +
+            '<li data-id="checkout_error">' + error_message + '' +
             '</li>' +
             '</ul>' +
             '</div>'); // eslint-disable-line max-len
