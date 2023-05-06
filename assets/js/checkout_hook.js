@@ -91,10 +91,12 @@ jQuery(function ($) {
         }
         if (event.data === "infipay-startSubmitPaymentAirwallex") {
             blockOnSubmit(infipay_checkout_form);
-            infipay_checkout_form.addClass('processing')
+            //infipay_checkout_form.addClass('processing')
+            loadPaymentProcess();
         }
         if (event.data === "infipay-endSubmitPaymentAirwallex") {
             infipay_checkout_form.removeClass('processing').unblock();
+            $('#cs-awx-loader').hide();
         }
         if (event.data === 'infipay-paymentFormCompletedAirwallex') {
             window.paymentFormCompletedAirwallex = true;
@@ -106,6 +108,7 @@ jQuery(function ($) {
         if ((typeof event.data === 'object') && event.data.name === 'infipay-errorSubmitPaymentAirwallex') {
             console.log(event.data);
             infipay_checkout_form.removeClass('processing').unblock();
+            $('#cs-awx-loader').hide();
             
             if(event.data.value != null){
 				checkout_error(event.data.value);
