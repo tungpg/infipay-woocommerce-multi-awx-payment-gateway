@@ -1,10 +1,10 @@
 jQuery(function ($) {
-    var infipay_checkout_form = $('form.checkout');
+    var infipay_awx_checkout_form = $('form.checkout');
 
-    function loadPaymentProcess() {
+    function loadAwxPaymentProcess() {
         setTimeout(function () {
             if (!window.infipay_awx_checkout_error) {
-                infipay_checkout_form.removeClass('processing').unblock();
+                infipay_awx_checkout_form.removeClass('processing').unblock();
                 $('#cs-awx-loader').show();
                 setTimeout((function () {
                     $('#cs-awx-loader').hide();
@@ -45,7 +45,7 @@ jQuery(function ($) {
                     }
                 }, '*')
             } else {
-                infipay_checkout_form.submit()
+                infipay_awx_checkout_form.submit()
             }
         }
     })
@@ -90,12 +90,12 @@ jQuery(function ($) {
             $('.woocommerce-checkout-payment').unblock();
         }
         if (event.data === "infipay-startSubmitPaymentAirwallex") {
-            blockOnSubmit(infipay_checkout_form);
-            //infipay_checkout_form.addClass('processing')
-            loadPaymentProcess();
+            blockOnSubmit(infipay_awx_checkout_form);
+            //infipay_awx_checkout_form.addClass('processing')
+            loadAwxPaymentProcess();
         }
         if (event.data === "infipay-endSubmitPaymentAirwallex") {
-            infipay_checkout_form.removeClass('processing').unblock();
+            infipay_awx_checkout_form.removeClass('processing').unblock();
             $('#cs-awx-loader').hide();
         }
         if (event.data === 'infipay-paymentFormCompletedAirwallex') {
@@ -107,7 +107,7 @@ jQuery(function ($) {
         }
         if ((typeof event.data === 'object') && event.data.name === 'infipay-errorSubmitPaymentAirwallex') {
             console.log(event.data);
-            infipay_checkout_form.removeClass('processing').unblock();
+            infipay_awx_checkout_form.removeClass('processing').unblock();
             $('#cs-awx-loader').hide();
             
             if(event.data.value != null){
@@ -121,47 +121,47 @@ jQuery(function ($) {
             var paymentIntentId = event.data.value.id;
             var merchantOrderId = event.data.value.merchant_order_id;
             
-            if (infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
-                infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]').remove();
+            if (infipay_awx_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
+                infipay_awx_checkout_form.find('[name="infipay-awx-payment-intent-id"]').remove();
             }
             
-            if (infipay_checkout_form.find('[name="infipay-awx-payment-merchant-order-id"]')) {
-                infipay_checkout_form.find('[name="infipay-awx-payment-merchant-order-id"]').remove();
+            if (infipay_awx_checkout_form.find('[name="infipay-awx-payment-merchant-order-id"]')) {
+                infipay_awx_checkout_form.find('[name="infipay-awx-payment-merchant-order-id"]').remove();
             }
             
-            infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-intent-id" value="' + paymentIntentId + '"/>');
-            infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-merchant-order-id" value="' + merchantOrderId + '"/>');
-            infipay_checkout_form.removeClass('processing').unblock();
-            infipay_checkout_form.submit();
+            infipay_awx_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-intent-id" value="' + paymentIntentId + '"/>');
+            infipay_awx_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-merchant-order-id" value="' + merchantOrderId + '"/>');
+            infipay_awx_checkout_form.removeClass('processing').unblock();
+            infipay_awx_checkout_form.submit();
             
             if (validateFormCheckout()) {
-                loadPaymentProcess();
+                loadAwxPaymentProcess();
             }
         }
         /*if ((typeof event.data === 'object') && event.data.name === 'infipay-paymentIntentIdAirwallex') {
             var paymentIntentId = event.data.value;
-            if (infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
-                infipay_checkout_form.find('[name="infipay-awx-payment-intent-id"]').remove();
+            if (infipay_awx_checkout_form.find('[name="infipay-awx-payment-intent-id"]')) {
+                infipay_awx_checkout_form.find('[name="infipay-awx-payment-intent-id"]').remove();
             }
-            infipay_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-intent-id" value="' + paymentIntentId + '"/>');
-            infipay_checkout_form.removeClass('processing').unblock();
+            infipay_awx_checkout_form.append('<input style="display:none;" name="infipay-awx-payment-intent-id" value="' + paymentIntentId + '"/>');
+            infipay_awx_checkout_form.removeClass('processing').unblock();
             $('form.checkout').submit();
             if (validateFormCheckout()) {
-                loadPaymentProcess();
+                loadAwxPaymentProcess();
             }
         }*/
     }
 
     function checkout_error(error_message) {
         $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
-        infipay_checkout_form.prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
+        infipay_awx_checkout_form.prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
             '<ul class="woocommerce-error">' +
             '<li data-id="checkout_error">' + error_message + '' +
             '</li>' +
             '</ul>' +
             '</div>'); // eslint-disable-line max-len
-        infipay_checkout_form.removeClass('processing').unblock();
-        infipay_checkout_form.find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
+        infipay_awx_checkout_form.removeClass('processing').unblock();
+        infipay_awx_checkout_form.find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
         var scrollElement = $('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
         if (!scrollElement.length) {
             scrollElement = $('form.checkout');
