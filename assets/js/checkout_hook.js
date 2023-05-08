@@ -20,11 +20,12 @@ jQuery(function ($) {
         }
     })
     $('body').on('click', '#place_order', function (e) {
-	alert('clicked');
+	alert($('input[name="payment_method"]:checked').val());
         if ($('input[name="payment_method"]:checked').val() == 'infipay_awx') {
             window.infipay_awx_checkout_error = false;
             e.preventDefault();
             if (validateFormCheckout()) {
+	alert('validated');
                 $('#payment-area')[0].contentWindow.postMessage({
                     name: 'infipay-submitFormAirwallex',
                     value: {
