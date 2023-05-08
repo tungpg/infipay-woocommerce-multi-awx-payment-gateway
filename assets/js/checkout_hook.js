@@ -20,6 +20,7 @@ jQuery(function ($) {
         }
     })
     $('body').on('click', '#place_order', function (e) {
+	alert('clicked');
         if ($('input[name="payment_method"]:checked').val() == 'infipay_awx') {
             window.infipay_awx_checkout_error = false;
             e.preventDefault();
